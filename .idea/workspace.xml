@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf79638a-974f-43eb-85e2-6608dfb01dbe" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Python_Practice.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RPS_Game.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/number_guessing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/quiz_game.py" afterDir="false" />
-    </list>
+    <list default="true" id="bf79638a-974f-43eb-85e2-6608dfb01dbe" name="Changes" comment="Recent additions of mini projects I've done this week!" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,26 +18,32 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--follow-tags" />
+        <option name="title" value="Current Branch" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2sVg9FwZAktwfJSxeb6TlyousvN" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.RPS_Game.executor": "Run",
-    "Python.number_guessing.executor": "Run",
-    "Python.quiz_game.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.RPS_Game.executor&quot;: &quot;Run&quot;,
+    &quot;Python.number_guessing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.quiz_game.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="quiz_game" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Python_Practice" />
@@ -90,5 +85,9 @@
       <updated>1738546002470</updated>
     </task>
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Recent additions of mini projects I've done this week!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Recent additions of mini projects I've done this week!" />
   </component>
 </project>
