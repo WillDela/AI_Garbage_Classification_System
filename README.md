@@ -69,31 +69,40 @@ Flatten → Dense(512) → BatchNorm → Dropout(0.5) → Dense(12, softmax)
 ## 🚀 Quick Start
 
 ### Prerequisites
-- """bash
-- pip install tensorflow>=2.8.0
-- pip install numpy>=1.21.0
-- pip install pandas>=1.3.0
-- pip install scikit-learn>=1.0.0
-- pip install matplotlib>=3.5.0
-- pip install Pillow>=8.0.0
-- pip install kagglehub
-- Installation
-- bash# Clone the repository
-- git clone https://github.com/yourusername/garbage-classification-ai.git
-- cd garbage-classification-ai
+
+```bash
+pip install tensorflow>=2.8.0
+pip install numpy>=1.21.0
+pip install pandas>=1.3.0
+pip install scikit-learn>=1.0.0
+pip install matplotlib>=3.5.0
+pip install Pillow>=8.0.0
+pip install kagglehub
+```
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/garbage-classification-ai.git
+cd garbage-classification-ai
 
 # Install dependencies
-- pip install -r requirements.txt
-Usage
-- pythonimport numpy as np
-- from tensorflow.keras.models import load_model
-- from PIL import Image
+pip install -r requirements.txt
+```
+
+### Usage
+
+```python
+import numpy as np
+from tensorflow.keras.models import load_model
+from PIL import Image
 
 # Load trained model (after training)
-- model = load_model('garbage_classifier.h5')
+model = load_model('garbage_classifier.h5')
 
 # Preprocess image
- def preprocess_image(image_path):
+def preprocess_image(image_path):
     img = Image.open(image_path)
     img = img.convert('RGB')
     img = img.resize((96, 96), Image.Resampling.LANCZOS)
@@ -106,118 +115,128 @@ processed_img = preprocess_image(image_path)
 prediction = model.predict(processed_img)
 predicted_class = np.argmax(prediction)
 
-classes = ['battery', 'biological', 'brown-glass', 'cardboard', 'clothes', 
+classes = ['battery', 'biological', 'brown-glass', 'cardboard', 'clothes',
            'green-glass', 'metal', 'paper', 'plastic', 'shoes', 'trash', 'white-glass']
 print(f"Predicted class: {classes[predicted_class]}")
 print(f"Confidence: {prediction[0][predicted_class]:.2%}")
-📁 Dataset Information
+```
 
-Source: Kaggle Garbage Classification Dataset
-Total Images: 15,515 images
-Image Resolution: 96×96×3 (RGB)
-Data Split:
+## 📁 Dataset Information
 
-Training: 70% (10,860 images)
-Validation: 15% (2,327 images)
-Testing: 15% (2,328 images)
+- **Source**: Kaggle Garbage Classification Dataset
+- **Total Images**: 15,515 images
+- **Image Resolution**: 96×96×3 (RGB)
+- **Data Split**:
+  - Training: 70% (10,860 images)
+  - Validation: 15% (2,327 images)
+  - Testing: 15% (2,328 images)
+- **Class Distribution**: Imbalanced (handled with class weights)
 
+### Data Preprocessing
 
-Class Distribution: Imbalanced (handled with class weights)
+- Stratified splitting to maintain class balance across splits
+- Image normalization (pixel values scaled to 0-1 range)
+- High-quality resizing using LANCZOS resampling
+- Error handling for corrupted images
+- Memory-efficient loading with float32 precision
 
-Data Preprocessing
+## 🔧 Technical Implementation
 
-Stratified splitting to maintain class balance across splits
-Image normalization (pixel values scaled to 0-1 range)
-High-quality resizing using LANCZOS resampling
-Error handling for corrupted images
-Memory-efficient loading with float32 precision
+### Key Engineering Decisions
 
-🔧 Technical Implementation
-Key Engineering Decisions
+- **Batch Normalization**: Added after each convolutional block for training stability
+- **Progressive Dropout**: Increasing dropout rates (0.25 → 0.5) toward output layers
+- **Class Weighting**: Computed inverse frequency weights to handle data imbalance
+- **Callback Strategy**:
+  - Early stopping (patience=7) to prevent overfitting
+  - Learning rate reduction (factor=0.5, patience=3) for fine-tuning
 
-Batch Normalization: Added after each convolutional block for training stability
-Progressive Dropout: Increasing dropout rates (0.25 → 0.5) toward output layers
-Class Weighting: Computed inverse frequency weights to handle data imbalance
-Callback Strategy:
+### Training Configuration
 
-Early stopping (patience=7) to prevent overfitting
-Learning rate reduction (factor=0.5, patience=3) for fine-tuning
-
-
-
-Training Configuration
-python# Optimizer: Adam (adaptive learning rate)
-# Loss: Sparse Categorical Crossentropy 
+```python
+# Optimizer: Adam (adaptive learning rate)
+# Loss: Sparse Categorical Crossentropy
 # Metrics: Accuracy
 # Batch Size: 32
 # Max Epochs: 25 (early stopping enabled)
 # Initial Learning Rate: 0.001
-📊 Model Analysis
-Strengths
+```
+## 📊 Model Analysis
 
-✅ Strong performance on well-represented classes (clothes, glass types)
-✅ Robust preprocessing pipeline with error handling
-✅ Comprehensive evaluation with confusion matrix and classification report
-✅ Addresses class imbalance with weighted training
-✅ Implements regularization techniques (dropout, batch norm)
+### Strengths
 
-Current Limitations
+- ✅ Strong performance on well-represented classes (clothes, glass types)
+- ✅ Robust preprocessing pipeline with error handling
+- ✅ Comprehensive evaluation with confusion matrix and classification report
+- ✅ Addresses class imbalance with weighted training
+- ✅ Implements regularization techniques (dropout, batch norm)
 
-⚠️ Overfitting detected: 18% gap between training (97%) and validation (82%) accuracy
-⚠️ Poor performance on metal and plastic detection (57-64% accuracy)
-⚠️ Dataset size limitations (~15K images total)
-⚠️ Memory constraints limiting larger image resolutions
+### Current Limitations
 
-🔮 Future Improvements
-Immediate Enhancements
+- ⚠️ Overfitting detected: 18% gap between training (97%) and validation (82%) accuracy
+- ⚠️ Poor performance on metal and plastic detection (57-64% accuracy)
+- ⚠️ Dataset size limitations (~15K images total)
+- ⚠️ Memory constraints limiting larger image resolutions
 
-Data Augmentation: Rotation, scaling, brightness adjustments to increase dataset diversity
-Advanced Regularization: L1/L2 regularization, more aggressive dropout
-Transfer Learning: Use pre-trained models (ResNet, EfficientNet) for better feature extraction
-Ensemble Methods: Combine multiple models for improved accuracy
+## 🔮 Future Improvements
 
-Long-term Goals
+### Immediate Enhancements
 
-Real-time Classification: Optimize for mobile deployment
-Multi-object Detection: Detect multiple waste items in single image
-Geographical Adaptation: Train region-specific models for local waste variations
-Web Application: User-friendly interface for waste classification
+- **Data Augmentation**: Rotation, scaling, brightness adjustments to increase dataset diversity
+- **Advanced Regularization**: L1/L2 regularization, more aggressive dropout
+- **Transfer Learning**: Use pre-trained models (ResNet, EfficientNet) for better feature extraction
+- **Ensemble Methods**: Combine multiple models for improved accuracy
 
-🌍 Environmental Impact & Ethics
-Positive Impact
+### Long-term Goals
 
-Waste Management: Automated sorting can improve recycling efficiency
-Environmental Education: Helps users understand waste categorization
-Resource Optimization: Better sorting leads to improved material recovery
+- **Real-time Classification**: Optimize for mobile deployment
+- **Multi-object Detection**: Detect multiple waste items in single image
+- **Geographical Adaptation**: Train region-specific models for local waste variations
+- **Web Application**: User-friendly interface for waste classification
 
-Ethical Considerations
+## 🌍 Environmental Impact & Ethics
 
-Bias Awareness: Model trained on specific dataset may not generalize to all regions
-Privacy: No personally identifiable information in training data
-Misclassification Risk: Incorrect predictions could lead to improper waste handling
+### Positive Impact
 
-🤝 Contributing
+- **Waste Management**: Automated sorting can improve recycling efficiency
+- **Environmental Education**: Helps users understand waste categorization
+- **Resource Optimization**: Better sorting leads to improved material recovery
+
+### Ethical Considerations
+
+- **Bias Awareness**: Model trained on specific dataset may not generalize to all regions
+- **Privacy**: No personally identifiable information in training data
+- **Misclassification Risk**: Incorrect predictions could lead to improper waste handling
+
+## 🤝 Contributing
+
 Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
-Development Setup
-bash# Fork the repository
+
+### Development Setup
+
+```bash
+# Fork the repository
 # Create a feature branch
 git checkout -b feature/amazing-feature
 
 # Make your changes and commit
 git commit -m "Add amazing feature"
 
-# Push to the branch  
+# Push to the branch
 git push origin feature/amazing-feature
 
 # Open a Pull Request
-📄 License
+```
+
+## 📄 License
+
 This project is licensed under the MIT License
 
-🙏 Acknowledgments
+## 🙏 Acknowledgments
 
-Dataset: Kaggle Garbage Classification Dataset by mostafaabla
-Framework: TensorFlow and Keras teams
-Inspiration: Environmental sustainability and AI for good initiatives
+- **Dataset**: Kaggle Garbage Classification Dataset by mostafaabla
+- **Framework**: TensorFlow and Keras teams
+- **Inspiration**: Environmental sustainability and AI for good initiatives
 
 
 
