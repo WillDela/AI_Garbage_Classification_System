@@ -1,107 +1,78 @@
-# 🗂️ Garbage Classification AI
+# Garbage Classification AI
 
-An intelligent waste classification system using Convolutional Neural Networks (CNNs) to automatically categorize different types of garbage into 12 distinct categories, promoting better waste management and environmental sustainability.
+I built this project to see if I could get a CNN to actually tell apart different types of trash, which sounds simple until you realize how similar plastic and metal can look in a photo. The model classifies waste into 12 categories and landed at 83.4% accuracy on the test set, which I was happy with for a first pass, though as I'll get into below, that number hides some categories that really struggled.
 
-## 📊 Project Overview
+## Why 12 categories
 
-This project implements a deep learning solution for garbage classification using TensorFlow and Keras. The model can identify and categorize waste items into 12 different classes, achieving **83.4% accuracy** on test data.
+I picked these 12 because they're the ones that actually matter for real recycling decisions: battery, biological waste, brown glass, cardboard, clothes, green glass, metal, paper, plastic, shoes, general trash, and white glass. Anything less specific than this and the model isn't really useful for sorting.
 
-### 🎯 Supported Waste Categories
-- Battery
-- Biological waste
-- Brown glass
-- Cardboard  
-- Clothes
-- Green glass
-- Metal
-- Paper
-- Plastic
-- Shoes
-- Trash (general)
-- White glass
+## How the model is built
 
-## 🏗️ Model Architecture
+The architecture is a fairly standard CNN setup, but I made a few specific choices worth explaining:
 
-The CNN model features a sophisticated architecture designed for optimal image classification:
-Input Layer (96×96×3 RGB images)
-↓
-Conv2D(32) → BatchNorm → Conv2D(32) → MaxPool → Dropout(0.25)
-↓
-Conv2D(64) → BatchNorm → Conv2D(64) → MaxPool → Dropout(0.25)
-↓
-Conv2D(128) → BatchNorm → Conv2D(128) → MaxPool → Dropout(0.25)
-↓
-Flatten → Dense(512) → BatchNorm → Dropout(0.5) → Dense(12, softmax)
+- Three convolutional blocks (32 → 64 → 128 filters), each with batch normalization and a max pool
+- Dropout increasing from 0.25 to 0.5 as you go deeper, since I noticed the model overfitting hard without it
+- Class weighting, because the dataset isn't evenly split across categories and I didn't want the model just learning to guess "clothes" for everything since it's overrepresented
+- Early stopping and a learning rate scheduler so I wasn't just guessing how many epochs to run
 
-**Key Features:**
-- **9.7M parameters** for comprehensive feature learning
-- **Batch normalization** for training stability
-- **Progressive dropout** (0.25 → 0.5) to prevent overfitting  
-- **Class weighting** to handle dataset imbalance
-- **Early stopping** and **learning rate scheduling** for optimal training
+Input images are 96x96 RGB, and the whole thing comes out to about 9.7 million parameters.
 
-## 📈 Performance Results
+## Results
 
-| Metric | Score |
-|--------|-------|
-| **Test Accuracy** | 83.42% |
-| **Test Loss** | 0.6612 |
-| **Best Validation Accuracy** | 82.55% |
-| **Total Parameters** | 9,733,804 |
+Overall test accuracy was 83.4%, but the per-class breakdown tells a more honest story. Clothes and green glass did really well (94.7% and 90.4%), probably because they're visually distinct from everything else in the dataset. Metal and plastic were the weak spots, sitting at 57.4% and 63.8%. I think this is because both categories cover a huge range of shapes and colors — a plastic bottle and a plastic bag don't look anything alike, but they're both labeled "plastic," so the model has a hard time learning one consistent pattern for either category.
 
-### 📊 Per-Class Performance
+I also noticed about an 18% gap between training accuracy (97%) and validation accuracy (82%), which tells me the model is memorizing the training set more than I'd like. That's the main thing I'd want to fix before calling this done.
 
 | Class | Precision | Recall | F1-Score | Accuracy |
 |-------|-----------|--------|----------|----------|
-| **Clothes** | 0.94 | 0.95 | 0.94 | 94.7% |
-| **Green Glass** | 0.89 | 0.90 | 0.89 | 90.4% |
-| **Biological** | 0.84 | 0.86 | 0.85 | 85.8% |
-| **Paper** | 0.80 | 0.85 | 0.83 | 85.4% |
-| **Brown Glass** | 0.78 | 0.82 | 0.80 | 82.4% |
-| **Trash** | 0.76 | 0.82 | 0.79 | 81.7% |
-| **Shoes** | 0.77 | 0.81 | 0.79 | 80.8% |
-| **Cardboard** | 0.78 | 0.81 | 0.79 | 80.6% |
-| **Battery** | 0.82 | 0.73 | 0.77 | 72.5% |
-| **White Glass** | 0.75 | 0.67 | 0.71 | 67.2% |
-| **Plastic** | 0.64 | 0.64 | 0.64 | 63.8% |
-| **Metal** | 0.73 | 0.57 | 0.64 | 57.4% |
+| Clothes | 0.94 | 0.95 | 0.94 | 94.7% |
+| Green Glass | 0.89 | 0.90 | 0.89 | 90.4% |
+| Biological | 0.84 | 0.86 | 0.85 | 85.8% |
+| Paper | 0.80 | 0.85 | 0.83 | 85.4% |
+| Brown Glass | 0.78 | 0.82 | 0.80 | 82.4% |
+| Trash | 0.76 | 0.82 | 0.79 | 81.7% |
+| Shoes | 0.77 | 0.81 | 0.79 | 80.8% |
+| Cardboard | 0.78 | 0.81 | 0.79 | 80.6% |
+| Battery | 0.82 | 0.73 | 0.77 | 72.5% |
+| White Glass | 0.75 | 0.67 | 0.71 | 67.2% |
+| Plastic | 0.64 | 0.64 | 0.64 | 63.8% |
+| Metal | 0.73 | 0.57 | 0.64 | 57.4% |
 
-## 🚀 Quick Start
+## Dataset
 
-### Prerequisites
+I used the Kaggle Garbage Classification Dataset (by mostafaabla), which has 15,515 images total. I split it 70/15/15 for train/validation/test, using stratified splitting so each split kept roughly the same class balance as the full dataset. Images got resized to 96x96 using LANCZOS resampling and normalized to a 0-1 range.
+
+## What I'd fix next
+
+- **Data augmentation** — rotating, scaling, and adjusting brightness on training images so the model sees more variation, especially for the categories that are struggling
+- **Transfer learning** — trying a pretrained model like ResNet or EfficientNet instead of training from scratch, since 15K images isn't a ton of data for a CNN this size
+- **Fixing the overfitting gap** — probably needs stronger regularization or more aggressive augmentation before I trust this model on real-world photos
+
+## Some things worth being honest about
+
+This model was trained on one specific dataset, so it might not generalize well to how trash actually looks in a different region or lighting setup. There's no personal data involved in training, but I'd also want to think about what happens if the model gets something wrong in a real sorting system — misclassifying a battery as general trash isn't just an accuracy statistic, it has an actual environmental consequence.
+
+## Setup
 
 ```bash
-pip install tensorflow>=2.8.0
-pip install numpy>=1.21.0
-pip install pandas>=1.3.0
-pip install scikit-learn>=1.0.0
-pip install matplotlib>=3.5.0
-pip install Pillow>=8.0.0
-pip install kagglehub
+pip install tensorflow>=2.8.0 numpy>=1.21.0 pandas>=1.3.0 scikit-learn>=1.0.0 matplotlib>=3.5.0 Pillow>=8.0.0 kagglehub
 ```
 
-### Installation
-
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/garbage-classification-ai.git
 cd garbage-classification-ai
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### Usage
+## Using it
 
 ```python
 import numpy as np
 from tensorflow.keras.models import load_model
 from PIL import Image
 
-# Load trained model (after training)
 model = load_model('garbage_classifier.h5')
 
-# Preprocess image
 def preprocess_image(image_path):
     img = Image.open(image_path)
     img = img.convert('RGB')
@@ -109,7 +80,6 @@ def preprocess_image(image_path):
     img_array = np.array(img, dtype=np.float32) / 255.0
     return np.expand_dims(img_array, axis=0)
 
-# Make prediction
 image_path = "path/to/your/garbage/image.jpg"
 processed_img = preprocess_image(image_path)
 prediction = model.predict(processed_img)
@@ -121,122 +91,10 @@ print(f"Predicted class: {classes[predicted_class]}")
 print(f"Confidence: {prediction[0][predicted_class]:.2%}")
 ```
 
-## 📁 Dataset Information
+## License
 
-- **Source**: Kaggle Garbage Classification Dataset
-- **Total Images**: 15,515 images
-- **Image Resolution**: 96×96×3 (RGB)
-- **Data Split**:
-  - Training: 70% (10,860 images)
-  - Validation: 15% (2,327 images)
-  - Testing: 15% (2,328 images)
-- **Class Distribution**: Imbalanced (handled with class weights)
+MIT
 
-### Data Preprocessing
+## Credit
 
-- Stratified splitting to maintain class balance across splits
-- Image normalization (pixel values scaled to 0-1 range)
-- High-quality resizing using LANCZOS resampling
-- Error handling for corrupted images
-- Memory-efficient loading with float32 precision
-
-## 🔧 Technical Implementation
-
-### Key Engineering Decisions
-
-- **Batch Normalization**: Added after each convolutional block for training stability
-- **Progressive Dropout**: Increasing dropout rates (0.25 → 0.5) toward output layers
-- **Class Weighting**: Computed inverse frequency weights to handle data imbalance
-- **Callback Strategy**:
-  - Early stopping (patience=7) to prevent overfitting
-  - Learning rate reduction (factor=0.5, patience=3) for fine-tuning
-
-### Training Configuration
-
-```python
-# Optimizer: Adam (adaptive learning rate)
-# Loss: Sparse Categorical Crossentropy
-# Metrics: Accuracy
-# Batch Size: 32
-# Max Epochs: 25 (early stopping enabled)
-# Initial Learning Rate: 0.001
-```
-## 📊 Model Analysis
-
-### Strengths
-
-- ✅ Strong performance on well-represented classes (clothes, glass types)
-- ✅ Robust preprocessing pipeline with error handling
-- ✅ Comprehensive evaluation with confusion matrix and classification report
-- ✅ Addresses class imbalance with weighted training
-- ✅ Implements regularization techniques (dropout, batch norm)
-
-### Current Limitations
-
-- ⚠️ Overfitting detected: 18% gap between training (97%) and validation (82%) accuracy
-- ⚠️ Poor performance on metal and plastic detection (57-64% accuracy)
-- ⚠️ Dataset size limitations (~15K images total)
-- ⚠️ Memory constraints limiting larger image resolutions
-
-## 🔮 Future Improvements
-
-### Immediate Enhancements
-
-- **Data Augmentation**: Rotation, scaling, brightness adjustments to increase dataset diversity
-- **Advanced Regularization**: L1/L2 regularization, more aggressive dropout
-- **Transfer Learning**: Use pre-trained models (ResNet, EfficientNet) for better feature extraction
-- **Ensemble Methods**: Combine multiple models for improved accuracy
-
-### Long-term Goals
-
-- **Real-time Classification**: Optimize for mobile deployment
-- **Multi-object Detection**: Detect multiple waste items in single image
-- **Geographical Adaptation**: Train region-specific models for local waste variations
-- **Web Application**: User-friendly interface for waste classification
-
-## 🌍 Environmental Impact & Ethics
-
-### Positive Impact
-
-- **Waste Management**: Automated sorting can improve recycling efficiency
-- **Environmental Education**: Helps users understand waste categorization
-- **Resource Optimization**: Better sorting leads to improved material recovery
-
-### Ethical Considerations
-
-- **Bias Awareness**: Model trained on specific dataset may not generalize to all regions
-- **Privacy**: No personally identifiable information in training data
-- **Misclassification Risk**: Incorrect predictions could lead to improper waste handling
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
-
-### Development Setup
-
-```bash
-# Fork the repository
-# Create a feature branch
-git checkout -b feature/amazing-feature
-
-# Make your changes and commit
-git commit -m "Add amazing feature"
-
-# Push to the branch
-git push origin feature/amazing-feature
-
-# Open a Pull Request
-```
-
-## 📄 License
-
-This project is licensed under the MIT License
-
-## 🙏 Acknowledgments
-
-- **Dataset**: Kaggle Garbage Classification Dataset by mostafaabla
-- **Framework**: TensorFlow and Keras teams
-- **Inspiration**: Environmental sustainability and AI for good initiatives
-
-
-
+Dataset from Kaggle (mostafaabla), built with TensorFlow/Keras.
